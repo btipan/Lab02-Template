@@ -31,12 +31,22 @@ int input_check (int a, int c, int ch, int ca, float apples, float carrots, int 
     return 0;
 }
 
-float discount(int chips)
+float discount(int chips, int candy)
 {
-    float extra;
-    extra = (CANDY_PRICE/2) * (chips/2);
-    printf("%.2f extra\n", extra);
-    return extra ;
+    float disc;
+    int chip = chips/2;
+
+    if (chip >= candy)
+    {
+        disc = candy * CANDY_PRICE * 0.5f;
+    }
+    
+    else if (chip < candy)
+    {
+        int new_quant = candy - chip;
+        disc = (new_quant * CANDY_PRICE) + (chip * CANDY_PRICE * 0.5f);
+    }
+    return disc;
 }
 
 float overalldiscount (float total)
@@ -103,13 +113,13 @@ int main(void)
         float candfifty;
         if (chips % 2 == 0)
         {
-            candfifty = discount(chips);
+            candfifty = discount(chips, candy);
             total += candfifty;
         }
         else if (chips % 2 != 0)
         {
             int chip = chips - 1;
-            candfifty = discount(chip);
+            candfifty = discount(chip, candy);
             total += candfifty;
 
         }
