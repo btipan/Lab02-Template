@@ -6,6 +6,8 @@
 #define CANDY_PRICE 1.50f
 #define TAX 1.05f
 
+
+
 int input_check (int a, int c, int ch, int ca, float apples, float carrots, int chips, int candy)
 {
     int scanf_total = a + c + ch + ca;
@@ -49,40 +51,18 @@ float discount(int chips, int candy)
     return disc;
 }
 
-float overalldiscount (float total)
+float overalldiscount (float apples, float carrots, float chips, float candy)
 {
-    float new_total = total * 0.9;
-    float discount = total * 0.1;
-    printf("Discount: %.2f\n", discount);
-    return new_total;
+    float discount = (apples + carrots + chips + candy) * 0.10f;
+    return discount;
 }
-
-// print 67 lines
-
-float cost_lesschips(float apples, float carrots, int chips, int candy)
-{
-    float total;
-    total = (apples * APPLES_PRICE) + (carrots * CARROTS_PRICE) + (chips * CHIPS_PRICE) + (candy * CANDY_PRICE);
-    return total;
-}
-float cost_morechips(float apples, float carrots, int chips)
-{
-    float a, b, c;
-    a = apples * APPLES_PRICE;
-    b = carrots * CARROTS_PRICE;
-    c = chips * CHIPS_PRICE;
-    printf("%d * %.2f = %.2f\n", chips, CHIPS_PRICE, c);
-    printf("%.2f %.2f %.2f\n", a, b, c);
-    float total = (apples * APPLES_PRICE) + (carrots * CARROTS_PRICE) + (chips * CHIPS_PRICE);
-    printf("total: %.2f\n", total);
-    return total;
-}
-
 
 int main(void)
 {
-    float apples, carrots, total;
+    float apples, carrots, total, disc_candy;
     int chips, candy;
+    float apple_cost, carrot_cost, chips_cost, candy_cost;
+    float candy_total, subtotal, tax, discounted, cost_total;
 
     total = 0;
 
@@ -108,38 +88,64 @@ int main(void)
         return 1;
     }
 
+    apple_cost = apples * APPLES_PRICE;
+    carrot_cost = carrots * CARROTS_PRICE;
+    chips_cost = chips * CHIPS_PRICE;
+    candy_cost = candy * CANDY_PRICE;
+
+
     if(chips >= 2)
     {
-        float candfifty;
+        float candfifty = 0;
+        disc_candy = 0;
         if (chips % 2 == 0)
         {
             candfifty = discount(chips, candy);
-            total += candfifty;
+            disc_candy += candfifty;
         }
         else if (chips % 2 != 0)
         {
             int chip = chips - 1;
             candfifty = discount(chip, candy);
-            total += candfifty;
+            disc_candy += candfifty;
 
         }
-        printf("balls %.2f\n", total);
-        total += cost_morechips(apples, carrots, chips);
-        printf("%.2f\n", total);
     }
-    else
-    {
-        total += cost_lesschips(apples, carrots, chips, candy);
-    }
+
+    candy_total = candy_cost - disc_candy;
 
     if (apples >= 1.0f && carrots >= 1.0f && chips >= 1 && candy >= 1)
     {
-        total = overalldiscount(total);
+        discounted = overalldiscount(apple_cost, carrot_cost, chips_cost, candy_total);
     }
 
-    float after_tax = total * TAX;
+    cost_total = (apple_cost + carrot_cost + chips_cost + candy_total);
+    subtotal = cost_total - discounted;
+    tax = subtotal * 0.05f;
+    total = subtotal + tax;
+    
+    printf("\n");
+    printf("-------------------------------------------------------------------\n");
+    printf("| Item     | Quantity       | Cost        | Discount    | Total   |\n");
+    if (apples > 0.00f)
+    printf("| Apples   |%-7.2f      kg | $    %6.2f | -$     0.00 | $%6.2f |\n", apples, apple_cost, apple_cost);
+    if (carrots > 0.00f)
+    printf("| Carrots  |%-7.2f      kg | $    %6.2f | -$     0.00 | $%6.2f |\n", carrots, carrot_cost, carrot_cost);
+    if (chips > 0)
+    printf("| Chips    |%-16d| $    %6.2f | -$     0.00 | $%6.2f |\n", chips, chips_cost, chips_cost);
+    if (candy > 0)
+    printf("| Candy    |%-16d| $    %6.2f | -$%9.2f | $%6.2f |\n", candy, candy_cost, disc_candy, candy_total);
+    printf("-------------------------------------------------------------------\n");
+    printf("\n");
+    if (discounted > 0)
+    printf("Subtotal        : $%2.2f - $%2.2f = $%2.2f\n", subtotal, discounted, total);
+    else
+    printf("Subtotal        : $%2.2f\n", subtotal);
+    printf("Tax (5%%)        : $%2.2f\n", tax);
+    printf("----------------------------------------------------\n");
+    printf("Total           : $%2.2f\n", total);
 
-    printf("Total: $%.2f\n", total);
-    printf("Tax (5%%): $%.2f\n", after_tax);
+    
+
     return 0;
 }
